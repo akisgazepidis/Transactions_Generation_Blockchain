@@ -1,4 +1,3 @@
-# Transactions_Generation_Blockchain
 ## Tools to Install:
     - Install Docker (from the original website)
     - Install Java (from the original website) + fix the home paths of java

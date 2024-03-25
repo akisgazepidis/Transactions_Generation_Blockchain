@@ -1,37 +1,48 @@
 import socket
 import time
-import random
-import string
 
-PORT = 9999
 
-def generate_transaction():
-    """Generate a random unique transaction."""
-    transaction = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-    return transaction
 
-def main():
-    """Main function to run the server."""
+def start():
+    # Create a TCP/IP socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('', PORT))
-    server_socket.listen()
 
-    print("Server ready: listening to port {0} for connections.\n".format(PORT))
+    # Bind the socket to the port
+    server_address = ('localhost', 9999)
+    print('Starting up on {} port {}'.format(*server_address))
+    server_socket.bind(server_address)
 
-    while True:
-        client_socket, client_address = server_socket.accept()
-        print("Client connected:", client_address)
+    # Listen for incoming connections
+    server_socket.listen(1)
 
-        try:
-            while True:
-                transaction = generate_transaction()
-                client_socket.send((transaction + '\n').encode())
-                print("Sent transaction:", transaction)
-                time.sleep(1)
-        except Exception as e:
-            print("An error occurred:", e)
-        finally:
-            client_socket.close()
+    try:
+        while True:
+            print('Waiting for a connection...')
+            connection, client_address = server_socket.accept()
+            print('Connection from', client_address)
+
+            try:
+                counter = 0
+                while True:
+                    # Generate a transaction (an arbitrary string)
+                    transaction = f"Sample transaction_{counter}"
+                    print(transaction)
+                    counter += 1
+
+                    # Send the transaction
+                    connection.sendall((transaction + "\n").encode())
+
+
+
+                    # Sleep for one second
+                    time.sleep(1)
+            finally:
+                # Clean up the connection
+                connection.close()
+    finally:
+        # Clean up the server socket
+        server_socket.close()
+
 
 if __name__ == "__main__":
-    main()
+    start()
